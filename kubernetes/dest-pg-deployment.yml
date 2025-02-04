@@ -37,6 +37,8 @@ spec:
           value: postgres
         - name: POSTGRES_PASSWORD
           value: postgres
+        - name: POSTGRES_DB
+          value: warehouse
         ports:
         - containerPort: 5432
           name: postgres

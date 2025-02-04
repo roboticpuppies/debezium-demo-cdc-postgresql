@@ -9,13 +9,11 @@ spec:
   class: io.debezium.connector.jdbc.JdbcSinkConnector
   config:
     topics:
-    database.hostname: postgres
-    database.port: 5432
-    database.user: postgres
-    database.password: postgres
-    database.server.id: 184054
-    database.dbname: postgres
-    topic.prefix: pg1
-    schema.include.list: inventory
-    schema.history.internal.kafka.bootstrap.servers: debezium-cluster-kafka-bootstrap.debezium-example.svc:9092
-    schema.history.internal.kafka.topic: schema-changes.inventory
+    connection.url: jdbc:postgresql://postgres-warehouse.debezium-example.svc/warehouse
+    connection.username: postgres
+    connection.password: postgres
+    insert.mode: upsert
+    delete.enabled: true
+    primary.key.mode: record_key
+    schema.evolution: basic
+    topics: pg1.inventory.orders
