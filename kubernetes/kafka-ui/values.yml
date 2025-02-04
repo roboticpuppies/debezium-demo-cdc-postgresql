@@ -1,0 +1,19 @@
+yamlApplicationConfig:
+  kafka:
+    clusters:
+      - name: debezium-cluster
+        bootstrapServers:  debezium-cluster-kafka-bootstrap.debezium-example.svc:9092
+  auth:
+    type: disabled
+  management:
+    health:
+      ldap:
+        enabled: false
+
+service:
+  type: LoadBalancer
+  port: 8080
+  # In case of service type LoadBalancer, you can specify reserved static IP
+  # loadBalancerIP: 10.11.12.13
+  # if you want to force a specific nodePort. Must be use with service.type=NodePort
+  # nodePort: 30011

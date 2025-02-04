@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: pgadmin-config
+ namespace: debezium-example
+data:
+ servers.json: |
+   {
+       "Servers": {
+         "1": {
+           "Name": "Source DB1",
+           "Group": "Servers",
+           "Port": 5432,
+           "Username": "postgres",
+           "Host": "postgres",
+           "SSLMode": "prefer",
+           "MaintenanceDB": "postgres"
+         },
+         "2": {
+           "Name": "PG Warehouse",
+           "Group": "Servers",
+           "Port": 5432,
+           "Username": "postgres",
+           "Host": "postgres-warehouse",
+           "SSLMode": "prefer",
+           "MaintenanceDB": "postgres"
+         }
+       }
+   }

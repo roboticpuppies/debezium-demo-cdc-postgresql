@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-source1
+  namespace: debezium-example
+spec:
+  selector:
+    matchLabels:
+      app: postgres-source1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres-source1
+    spec:
+      containers:
+      - image: quay.io/debezium/example-postgres:3.0
+        name: postgres-source1
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        ports:
+        - containerPort: 5432
+          name: postgres

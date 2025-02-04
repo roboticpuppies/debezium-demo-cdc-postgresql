@@ -1,0 +1,59 @@
+services:
+  zookeeper:
+    container_name: zookeeper
+    image: quay.io/debezium/zookeeper:3.0
+  kafka:
+    container_name: kafka
+    image: quay.io/debezium/kafka:3.0
+    ports:
+      - 9092:9092
+    links:
+      - zookeeper
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+  source_pg:
+    container_name: source_pg
+    image: quay.io/debezium/example-postgres:3.0
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  source_mongo:
+    container_name: source_mongo
+    image: mongo:5.0
+    command: ["mongod", "--replSet", "rs0", "--auth"]
+    ports:
+      - "37017:27017"
+    volumes:
+    - ./resources/initialize-mongo-single.js:/docker-entrypoint-initdb.d/initialize-mongo-single.js
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=admin
+  source_mongo_initializer:
+    container_name: source_mongo_initializer
+    image: mongo:5.0
+    depends_on:
+      - source_mongo
+    command: bash -c 'sleep 20 && mongo -u admin -p admin --authenticationDatabase admin source_mongo:27017/inventory --eval "rs.initiate();"'
+  connect:
+    image: quay.io/debezium/connect:3.0
+    ports:
+      - 8083:8083
+    links:
+      - kafka
+      - source_pg
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=connect_configs
+      - OFFSET_STORAGE_TOPIC=connect_offsets
+      - STATUS_STORAGE_TOPIC=connect_statuses
+      - ENABLE_DEBEZIUM_SCRIPTING=true
+  ui:
+    image: quay.io/debezium/debezium-ui
+    ports:
+      - 8080:8080
+    environment:
+      - KAFKA_CONNECT_URIS=http://connect:8083
