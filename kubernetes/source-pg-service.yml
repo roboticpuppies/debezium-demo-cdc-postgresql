@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: postgres-source1
   namespace: debezium-example
 spec:
   ports:
   - port: 5432
   selector:
-    app: postgres
+    app: postgres-source1
   clusterIP: None
