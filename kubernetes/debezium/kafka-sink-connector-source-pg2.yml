@@ -1,0 +1,20 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-sink-connector-source-pg2
+  namespace: debezium-example
+  labels:
+    strimzi.io/cluster: debezium-connect-cluster
+spec:
+  class: io.debezium.connector.jdbc.JdbcSinkConnector
+  config:
+    connection.url: jdbc:postgresql://postgres-warehouse.debezium-example.svc/warehouse
+    connection.username: postgres
+    connection.password: postgres
+    tasks.max: "5"
+    insert.mode: upsert
+    delete.enabled: true
+    primary.key.mode: record_key
+    schema.evolution: basic
+    topics.regex: source_pg2.(.*)
+    collection.name.format: source_pg2_${source.table}
