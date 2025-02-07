@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-warehouse-storage-pvc
+  namespace: debezium-example
+  labels:
+    app: postgres-warehouse
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-warehouse
+  namespace: debezium-example
+spec:
+  selector:
+    matchLabels:
+      app: postgres-warehouse
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres-warehouse
+    spec:
+      containers:
+      - image: postgis/postgis:16-3.5-alpine
+        name: postgres-warehouse
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: warehouse
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: postgres-warehouse-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-warehouse-storage
+        persistentVolumeClaim:
+          claimName: postgres-warehouse-storage-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-warehouse
+  namespace: debezium-example
+spec:
+  ports:
+  - port: 5432
+    targetPort: postgres
+  selector:
+    app: postgres-warehouse
