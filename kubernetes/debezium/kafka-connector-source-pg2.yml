@@ -1,0 +1,18 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-connector-postgres2
+  namespace: debezium-example
+  labels:
+    strimzi.io/cluster: debezium-connect-cluster
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  config:
+    database.hostname: postgres-source2
+    database.port: 5432
+    database.user: postgres
+    database.password: postgres
+    database.dbname: postgres
+    topic.prefix: source_pg2
+    schema.include.list: inventory
+    schema.history.internal.kafka.bootstrap.servers: debezium-cluster-kafka-bootstrap.debezium-example.svc:9092
