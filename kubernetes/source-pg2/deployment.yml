@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-source1
+  name: postgres-source2
   namespace: debezium-example
 spec:
   selector:
     matchLabels:
-      app: postgres-source1
+      app: postgres-source2
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: postgres-source1
+        app: postgres-source2
     spec:
       containers:
       - image: quay.io/debezium/example-postgres:3.0
-        name: postgres-source1
+        name: postgres-source2
         env:
         - name: POSTGRES_USER
           value: postgres
@@ -25,3 +25,14 @@ spec:
         ports:
         - containerPort: 5432
           name: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-source2
+  namespace: debezium-example
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: postgres-source2
