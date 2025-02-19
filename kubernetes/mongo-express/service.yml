@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-express
+  namespace: debezium-example
+  labels:
+    app: mongo-express
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8082
+      targetPort: 8081
+  selector:
+    app: mongo-express

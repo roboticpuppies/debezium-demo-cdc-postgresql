@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+  namespace: debezium-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+    spec:
+      containers:
+      - name: mongo-express
+        image: mongo-express:1-20-alpine3.19
+        ports:
+        - containerPort: 8081
+          name: mongo-express
+          protocol: TCP
+        envFrom:
+          - configMapRef:
+              name: mongo-express-config

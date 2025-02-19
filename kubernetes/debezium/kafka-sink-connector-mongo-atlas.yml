@@ -1,0 +1,27 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-sink-connector-source-mongo-atlas
+  namespace: debezium-example
+  labels:
+    strimzi.io/cluster: debezium-connect-cluster
+spec:
+  class: io.debezium.connector.jdbc.JdbcSinkConnector
+  config:
+    connection.url: jdbc:postgresql://postgres-warehouse.debezium-example.svc/warehouse
+    connection.username: postgres
+    connection.password: postgres
+    auto.create: true
+    schema.evolution: basic
+    primary.key.mode: record_key
+    primary.key.fields: id
+    insert.mode: upsert
+    delete.enabled: true
+    topics.regex: mongo_atlas.(.*)
+    collection.name.format: ${topic}
+    # collection.name.format: ${source.db}_${source.collection}
+    transforms: unwrap
+    transforms.unwrap.type: io.debezium.connector.mongodb.transforms.ExtractNewDocumentState
+    transforms.unwrap.drop.tombstones: false
+    transforms.unwrap.delete.handling.mode: rewrite
+    transforms.unwrap.flatten.struct: true

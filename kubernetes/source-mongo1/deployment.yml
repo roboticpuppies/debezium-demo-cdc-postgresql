@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-source1-storage-pvc
+  namespace: debezium-example
+  labels:
+    app: mongo-source1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-source1
+  namespace: debezium-example
+spec:
+  selector:
+    matchLabels:
+      app: mongo-source1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mongo-source1
+    spec:
+      containers:
+      - image: mongo:8.0.4-noble
+        name: mongo-source1
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: mongo
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: mongo
+        - name: MONGO_INITDB_DATABASE
+          value: demo_mongo1
+        ports:
+        - containerPort: 27017
+          name: mongo
+        volumeMounts:
+        - name: mongo-source1-storage
+          mountPath: /data/db
+        - name: mongo-source1-initdb
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mongo-source1-storage
+        persistentVolumeClaim:
+          claimName: mongo-source1-storage-pvc
+      - name: mongo-source1-initdb
+        configMap:
+          name: mongo-source1-sample-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-source1
+  namespace: debezium-example
+  labels:
+    app: mongo-source1
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 27020
+      targetPort: 27017
+  selector:
+    app: mongo-source1
