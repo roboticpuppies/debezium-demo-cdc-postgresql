@@ -1,0 +1,24 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-connector-mongo-atlas
+  namespace: debezium-example
+  labels:
+    strimzi.io/cluster: debezium-connect-cluster
+spec:
+  class: io.debezium.connector.mongodb.MongoDbConnector
+  config:
+    mongodb.connection.string: mongodb+srv://dev.xowo7.mongodb.net/
+    mongodb.user: roboticpuppies
+    mongodb.password: NFcLK3o1PNcvgUgM
+    mongodb.ssl.enabled: true
+    database.include.list: sample_db
+    topic.prefix: mng_deb_plugin
+    # transforms: unwrap
+    # transforms.unwrap.type: io.debezium.connector.mongodb.transforms.ExtractNewDocumentState
+    # transforms.unwrap.array.encoding: array
+    # transforms.unwrap.drop.tombstones: false
+    # transforms.unwrap.delete.handling.mode: rewrite
+# TODO:
+# - Set wal_level to logical in source pg
+# - Set shared_preload_libraries to decoderbufs

@@ -1,19 +1,27 @@
+# https://www.mongodb.com/community/forums/t/mongo-kafka-source-connector-not-shipping-data-to-kafka-topic/137780
+# https://www.mongodb.com/community/forums/t/kafka-connector-could-not-initialize-class-com-mongodb-kafka-connect-source-mongosourceconfig/102513/6
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaConnector
 metadata:
-  name: debezium-connector-mongo-atlas
+  name: debezium-connector-mongo-atlas-official-plugin
   namespace: debezium-example
   labels:
     strimzi.io/cluster: debezium-connect-cluster
 spec:
-  class: io.debezium.connector.mongodb.MongoDbConnector
+  class: com.mongodb.kafka.connect.MongoSourceConnector
+  tasksMax: 5
   config:
-    mongodb.connection.string: mongodb+srv://dev.xowo7.mongodb.net/
-    mongodb.user: roboticpuppies
-    mongodb.password: nRIhEAHQ0mUVS12k
-    mongodb.ssl.enabled: true
-    database.include.list: abcdef
-    topic.prefix: mongo_atlas
+    connection.uri: mongodb+srv://roboticpuppies:NFcLK3o1PNcvgUgM@dev.xowo7.mongodb.net/
+    database: sample_db
+    collection: forms
+    copy.existing: 'true'
+    publish.full.document.only: 'true'
+    topic.prefix: mongodb
+    poll.await.time.ms: 1000
+    pipeline: '[{"$match": {"form_type": "pipeline"}}]'
+    topic.creation.enable: 'true'
+    topic.creation.default.replication.factor: -1
+    topic.creation.default.partitions: -1
     # transforms: unwrap
     # transforms.unwrap.type: io.debezium.connector.mongodb.transforms.ExtractNewDocumentState
     # transforms.unwrap.array.encoding: array
